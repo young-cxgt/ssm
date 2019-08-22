@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cases.mapper.CateSeriesMapper">
+    <select id="selectCateSeriesListOrder" resultType="com.cases.entity.Cate_series">
+#         SELECT cs.series_id,cs.series_name,s.click,s.mobile_click
+        SELECT cs.*
+        FROM cate_series cs
+            LEFT JOIN statistics s
+                ON cs.series_id = s.series_id and cs.sid = s.sid
+        <trim prefix="where" suffixOverrides="or">
+            <if test="sid != null"> cs.sid = #{sid}</if>
+            <if test="repository > 0"> OR cs.repository = #{repository}</if>
+        </trim>
+        <if test="cate_code != null"> AND cs.second_cate_code = #{cate_code}</if>
+        <if test="sort == 0">ORDER BY s.click desc,cs.id desc</if>
+        <if test="sort == 1">ORDER BY cs.insert_time desc</if>
+
+    </select>
+
+    <!--<select id="selectSeriesGroupByCode" resultType="com.cases.entity.Cate_series">-->
+        <!--SELECT cs.second_cate_code,c.name AS series_name,count(*) AS series_id-->
+        <!--FROM cate_series AS cs LEFT JOIN cate AS c ON cs.second_cate_code = c.code-->
+        <!--WHERE cs.sid = #{sid} AND cs.series_name LIKE CONCAT('%', #{searchValue},'%')-->
+        <!--GROUP BY cs.second_cate_code-->
+    <!--</select>-->
+
+    <select id="selectSeriesGroupByCode" resultType="com.cases.entity.Cate_series">
+        SELECT cs.second_cate_code,c.name AS series_name,count(*) AS series_id
+        FROM cate_series AS cs LEFT JOIN cate AS c ON cs.second_cate_code = c.code
+        <where>
+            <if test="sid != null"> cs.sid = #{sid}</if>
+            <if test="repository != null"> OR cs.repository = #{repository}</if>
+            AND cs.series_name LIKE CONCAT('%', #{searchValue},'%') AND cs.status = 1
+        </where>
+        GROUP BY cs.second_cate_code
+    </select>
+
+    <select id="selectSeriesByCateCode" resultType="com.cases.entity.Cate_series">
+        SELECT cs.series_id,cs.series_name,cs.insert_time,cs.cate_code,s.click AS click,s.mobile_click AS mobile_click,s.score AS score,s.score_num AS score_num
+        FROM cate_series AS cs
+            LEFT JOIN statistics AS s ON cs.series_id = s.series_id
+        <where>
+            <if test="sid != null"> cs.sid = #{sid}</if>
+            <if test="repository != null"> OR cs.repository =#{repository}</if>
+            AND cs.cate_code =#{cateCode} AND cs.status = 1
+        </where>
+        GROUP BY cs.cate_code
+    </select>
+
+    <select id="selectCateSeriesBySw" resultType="com.cases.entity.Cate_series">
+        SELECT cs.series_id,cs.series_name,cs.insert_time,s.click AS statis_click
+        FROM cate_series AS cs LEFT JOIN statistics AS s ON cs.series_id = s.series_id
+        <where>
+            <if test="sid != null"> cs.sid = #{sid}</if>
+            <if test="repository != null"> OR cs.repository = #{repository}</if>
+            AND cs.series_name LIKE CONCAT('%', #{searchValue},'%') AND cs.status = 1
+        </where>
+        <if test="code != null"> AND cs.second_cate_code = #{code}</if>
+        <if test="sort == 0"> ORDER BY cs.id DESC</if>
+        <if test="sort == 1"> ORDER BY cs.insert_time DESC</if>
+        <if test="sort == 2"> ORDER BY s.click DESC</if>
+    </select>
+</mapper>

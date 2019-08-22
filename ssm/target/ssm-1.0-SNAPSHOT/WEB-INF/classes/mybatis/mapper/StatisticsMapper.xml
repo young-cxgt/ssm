@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cases.mapper.StatisticsMapper">
+    <select id="getStatisClick" resultType="com.cases.entity.Statistics" >
+        select series_id,click,mobile_click from statistics where series_id = #{id} AND sid = #{sid}
+    </select>
+
+    <!--<select id="selectSeriesMapList" resultType="java.util.HashMap" parameterType="java.lang.Integer">-->
+        <!--select series_id,series_name,score_num,score,click,mobile_click,click+mobile_click as count-->
+        <!--from statistics-->
+        <!--where sid = #{sid} order by click desc-->
+    <!--</select>-->
+
+    <select id="selectSeriesMapList" resultType="java.util.HashMap" parameterType="java.lang.Integer">
+        SELECT s.series_id,s.series_name,s.score_num,s.score,s.click,s.mobile_click,s.click+s.mobile_click AS count,uv.total AS watch_time
+        FROM statistics s
+            LEFT JOIN (SELECT series_id,SUM(watch_time) AS total FROM user_video WHERE sid = 1 GROUP BY series_id) AS uv
+                ON s.series_id = uv.series_id
+        WHERE sid = #{sid} ORDER BY click desc
+    </select>
+
+    <select id="selectSeriesStatistics" resultType="com.cases.entity.Statistics">
+        SELECT s.series_id,s.series_name,s.score_num,s.score,s.click,s.mobile_click,s.click+s.mobile_click AS count,uv.total AS watch_time
+        FROM statistics s
+        LEFT JOIN (SELECT series_id,SUM(watch_time) AS total FROM user_video WHERE sid = 1 GROUP BY series_id) AS uv
+        ON s.series_id = uv.series_id
+        WHERE sid = #{sid} ORDER BY click desc
+    </select>
+
+    <select id="getSeriesClicks" parameterType="java.lang.Integer" resultType="java.lang.Integer">
+        select SUM(click+mobile_click) from statistics where sid = #{sid}
+    </select>
+</mapper>

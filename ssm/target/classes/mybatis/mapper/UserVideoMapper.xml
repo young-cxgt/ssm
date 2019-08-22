@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cases.mapper.UserVideoMapper">
+    <select id="selectUserVideoList" resultType="com.cases.entity.User_video">
+        SELECT id,video_id,video_name,sum(click) AS click,sum(mobile_click) AS mobile_click,sum(watch_time) AS watch_time,series_id
+        FROM user_video
+        WHERE sid = #{sid}
+        <if test="videoName != null"> AND video_name LIKE CONCAT('%', #{videoName},'%')</if>
+        <if test="seriesName != null"> AND series_name LIKE CONCAT('%', #{seriesName},'%')</if>
+        GROUP BY video_id
+    </select>
+
+    <select id="selectUserCountList" parameterType="java.lang.Integer"  resultType="com.cases.entity.User_video">
+        SELECT id,video_id,video_name,user_id,username,click,mobile_click,watch_time,series_id
+        FROM user_video
+        WHERE sid = #{sid}
+        <if test="userId != null"> AND user_id = #{userId}</if>
+    </select>
+
+    <select id="selectUserVideoListMap" resultType="java.util.HashMap" parameterType="java.lang.Integer">
+        select user_id,username,video_name,watch_time,click,mobile_click,click+mobile_click as count
+        from user_video
+        where sid = #{sid} order by click desc
+    </select>
+</mapper>
