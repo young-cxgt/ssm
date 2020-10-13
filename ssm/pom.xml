@@ -19,7 +19,7 @@
     <maven.compiler.target>1.8</maven.compiler.target>
     <spring.version>4.3.15.RELEASE</spring.version>
     <javax.servlet.version>3.1.0</javax.servlet.version>
-    <junit.version>4.12</junit.version>
+    <junit.version>4.13.1</junit.version>
     <druid.version>1.1.0</druid.version>
     <fastjson.version>1.2.47</fastjson.version>
     <mybaitsplus.version>3.1.2</mybaitsplus.version>
